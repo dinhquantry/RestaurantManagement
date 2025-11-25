@@ -7,14 +7,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.util.List;
-
 public class ToolController {
+
+    @FXML private TextField txtName;
+    @FXML private TextField txtQuantity;
+    @FXML private TextField txtThreshold;
 
     @FXML private TableView<Tool> tblTools;
     @FXML private TableColumn<Tool, String> colName;
@@ -26,27 +26,32 @@ public class ToolController {
     public void initialize() {
         setupTableColumns();
         loadTools();
+
+        // Sự kiện click vào bảng để đổ dữ liệu lên form
+        tblTools.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                fillForm(newVal);
+            }
+        });
     }
 
     private void setupTableColumns() {
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-        // SỬA LỖI TẠI ĐÂY: Đổi getThreshold() thành getMinThreshold()
         colStatus.setCellValueFactory(cell -> {
             Tool t = cell.getValue();
             if (t.getQuantity() <= t.getMinThreshold()) {
-                return new SimpleStringProperty("CẢNH BÁO: Sắp hết");
+                return new SimpleStringProperty("CẢNH BÁO: Sắp hết (Min: " + t.getMinThreshold() + ")");
             }
             return new SimpleStringProperty("Ổn định");
         });
 
-        // SỬA LỖI TẠI ĐÂY NỮA
+        // Tô màu đỏ dòng cảnh báo
         tblTools.setRowFactory(tv -> new TableRow<Tool>() {
             @Override
             protected void updateItem(Tool item, boolean empty) {
                 super.updateItem(item, empty);
-                // Đổi getThreshold() thành getMinThreshold()
                 if (item != null && item.getQuantity() <= item.getMinThreshold()) {
                     setStyle("-fx-background-color: #ffcccc;");
                 } else {
@@ -57,18 +62,91 @@ public class ToolController {
     }
 
     private void loadTools() {
-        List<Tool> dataFromDB = toolDAO.getAllTools();
-        ObservableList<Tool> observableList = FXCollections.observableArrayList(dataFromDB);
-        tblTools.setItems(observableList);
-        checkAlerts(observableList);
+        ObservableList<Tool> list = FXCollections.observableArrayList(toolDAO.getAllTools());
+        tblTools.setItems(list);
     }
 
-    private void checkAlerts(ObservableList<Tool> list) {
-        // SỬA LỖI TẠI ĐÂY (Nếu có dùng stream)
-        long lowStockCount = list.stream().filter(t -> t.getQuantity() <= t.getMinThreshold()).count();
-        if (lowStockCount > 0) {
-            AlertUtils.showInfo("Cảnh báo kho dụng cụ",
-                    "Có " + lowStockCount + " loại dụng cụ đang dưới mức quy định!");
+    private void fillForm(Tool t) {
+        txtName.setText(t.getName());
+        txtQuantity.setText(String.valueOf(t.getQuantity()));
+        txtThreshold.setText(String.valueOf(t.getMinThreshold()));
+    }
+
+    @FXML
+    private void handleAdd() {
+        if (!validateInput()) return;
+
+        // ID = 0 vì DB tự tăng, Status mặc định "Tốt"
+        Tool t = new Tool(0, txtName.getText(),
+                Integer.parseInt(txtQuantity.getText()),
+                Integer.parseInt(txtThreshold.getText()),
+                "Tốt");
+
+        if (toolDAO.addTool(t)) {
+            AlertUtils.showInfo("Thành công", "Đã thêm dụng cụ mới!");
+            loadTools();
+            handleClear();
+        } else {
+            AlertUtils.showError("Lỗi", "Thêm thất bại!");
         }
+    }
+
+    @FXML
+    private void handleUpdate() {
+        Tool selected = tblTools.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertUtils.showError("Lỗi", "Vui lòng chọn dụng cụ cần sửa!");
+            return;
+        }
+        if (!validateInput()) return;
+
+        selected.setName(txtName.getText());
+        selected.setQuantity(Integer.parseInt(txtQuantity.getText()));
+        selected.setMinThreshold(Integer.parseInt(txtThreshold.getText()));
+
+        if (toolDAO.updateTool(selected)) {
+            AlertUtils.showInfo("Thành công", "Cập nhật thành công!");
+            loadTools();
+            tblTools.refresh();
+        } else {
+            AlertUtils.showError("Lỗi", "Cập nhật thất bại!");
+        }
+    }
+
+    @FXML
+    private void handleDelete() {
+        Tool selected = tblTools.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        if (AlertUtils.showConfirmation("Xác nhận", "Bạn có chắc muốn xóa: " + selected.getName() + "?")) {
+            if (toolDAO.deleteTool(selected.getId())) {
+                AlertUtils.showInfo("Thành công", "Đã xóa!");
+                loadTools();
+                handleClear();
+            }
+        }
+    }
+
+    @FXML
+    private void handleClear() {
+        txtName.clear();
+        txtQuantity.clear();
+        txtThreshold.clear();
+        tblTools.getSelectionModel().clearSelection();
+    }
+
+    private boolean validateInput() {
+        if (txtName.getText().isEmpty() || txtQuantity.getText().isEmpty() || txtThreshold.getText().isEmpty()) {
+            AlertUtils.showError("Lỗi", "Vui lòng nhập đầy đủ thông tin!");
+            return false;
+        }
+        try {
+            Integer.parseInt(txtQuantity.getText());
+            Integer.parseInt(txtThreshold.getText());
+        } catch (NumberFormatException e) {
+            AlertUtils.showError("Lỗi", "Số lượng và Mức cảnh báo phải là số nguyên!");
+            return false;
+        }
+        return true;
     }
 }

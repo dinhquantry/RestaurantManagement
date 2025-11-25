@@ -25,6 +25,13 @@
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.6</version>
         </dependency>
+        <!-- THÊM MỚI: Thư viện Web để dùng WebView, WebEngine (In hóa đơn) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>21.0.6</version>
+        </dependency>
+
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>

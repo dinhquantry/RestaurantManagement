@@ -62,4 +62,21 @@ public class OrderDAO {
             return false;
         }
     }
+    // HÀM MỚI: Tìm ID hóa đơn đang phục vụ tại bàn (Status = PENDING)
+    public int getPendingOrderId(int tableId) {
+        String sql = "SELECT order_id FROM Orders WHERE table_id = ? AND status = 'PENDING'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, tableId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("order_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // -1 nghĩa là bàn này chưa có đơn nào, hoặc đang trống
+    }
 }

@@ -58,7 +58,20 @@ public class MainDashboardController {
 
     @FXML
     private void handleShowOrder() {
-        switchView("OrderView.fxml");
+        // Logic cũ: switchView("OrderView.fxml"); -> Sửa thành:
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/OrderView.fxml"));
+            Parent view = loader.load();
+
+            // Truyền User sang OrderController
+            OrderController controller = loader.getController();
+            controller.initData(currentUser); // Hàm này sẽ được thêm vào OrderController bên dưới
+
+            mainBorderPane.setCenter(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("Lỗi", "Không thể mở màn hình Gọi món!");
+        }
     }
 
     @FXML
@@ -90,5 +103,21 @@ public class MainDashboardController {
     @FXML
     private void handleManageStaff() {
         switchView("StaffManagement.fxml");
+    }
+
+    @FXML
+    private void handleShowShifts() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ShiftManagement.fxml"));
+            Parent view = loader.load();
+
+            // Lấy controller và truyền user sang
+            ShiftManagementController controller = loader.getController();
+            controller.initData(currentUser);
+
+            mainBorderPane.setCenter(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

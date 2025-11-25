@@ -56,6 +56,11 @@
                         <Font size="14.0" />
                     </font>
                 </Button>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowShifts" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📅  Lịch làm việc">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
 
                 <Separator prefWidth="200.0" />
 
@@ -85,6 +90,7 @@
                                 <Font size="14.0" />
                             </font>
                         </Button>
+
                     </children>
                 </VBox>
 

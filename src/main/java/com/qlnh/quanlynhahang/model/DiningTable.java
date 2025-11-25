@@ -5,17 +5,18 @@ public class DiningTable {
     private String name;
     private int capacity;
     private String status; // EMPTY, OCCUPIED, BOOKED
+    private int floor;     // MỚI: Tầng
 
     public DiningTable() {}
 
-    public DiningTable(int id, String name, int capacity, String status) {
+    public DiningTable(int id, String name, int capacity, String status, int floor) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
         this.status = status;
+        this.floor = floor;
     }
 
-    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -28,8 +29,9 @@ public class DiningTable {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
+    public int getFloor() { return floor; }
+    public void setFloor(int floor) { this.floor = floor; }
+
     @Override
-    public String toString() {
-        return name;
-    }
+    public String toString() { return name; }
 }
