@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.StaffManagementController">
+    <children>
+        <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <!-- FORM NHẬP LIỆU -->
+                <VBox spacing="15.0" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;">
+                    <children>
+                        <Label text="THÔNG TIN NHÂN VIÊN" textFill="#2c3e50">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <VBox spacing="5.0">
+                            <Label text="Tên đăng nhập (*):" />
+                            <TextField fx:id="txtUsername" promptText="Ví dụ: nv01" />
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <Label text="Mật khẩu:" />
+                            <PasswordField fx:id="txtPassword" promptText="Để trống nếu không đổi" />
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <Label text="Họ và tên:" />
+                            <TextField fx:id="txtFullName" promptText="Ví dụ: Nguyễn Văn A" />
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <Label text="Số điện thoại:" />
+                            <TextField fx:id="txtPhone" promptText="09xxxxxxx" />
+                        </VBox>
+
+                        <VBox spacing="5.0">
+                            <Label text="Chức vụ (Role):" />
+                            <ComboBox fx:id="cbRole" maxWidth="1.7976931348623157E308" prefWidth="150.0" />
+                        </VBox>
+
+                        <VBox spacing="5.0" alignment="CENTER">
+                            <Label text="Ảnh đại diện:" maxWidth="1.7976931348623157E308"/>
+                            <ImageView fx:id="imgAvatar" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: gray;" />
+                            <Button text="Chọn ảnh..." onAction="#handleUploadAvatar" />
+                        </VBox>
+
+                        <HBox spacing="10.0" alignment="CENTER">
+                            <Button text="Thêm" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" onAction="#handleAdd" prefWidth="60.0"/>
+                            <Button text="Sửa" style="-fx-background-color: #f39c12; -fx-text-fill: white;" onAction="#handleUpdate" prefWidth="60.0"/>
+                            <Button text="Xóa" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" onAction="#handleDelete" prefWidth="60.0"/>
+                            <Button text="Mới" onAction="#handleClear" prefWidth="60.0"/>
+                        </HBox>
+                    </children>
+                    <prefWidth>300.0</prefWidth>
+                </VBox>
+
+                <!-- DANH SÁCH NHÂN VIÊN -->
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="DANH SÁCH TÀI KHOẢN">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <TableView fx:id="tblStaff" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+                                <TableColumn fx:id="colUsername" prefWidth="120.0" text="Username" />
+                                <TableColumn fx:id="colFullName" prefWidth="180.0" text="Họ tên" />
+                                <TableColumn fx:id="colRole" prefWidth="100.0" text="Chức vụ" />
+                                <TableColumn fx:id="colPhone" prefWidth="120.0" text="SĐT" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

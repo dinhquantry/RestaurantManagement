@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.TableMapController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #ecf0f1; -fx-padding: 10;">
+            <children>
+                <Label text="SƠ ĐỒ BÀN ĂN" textFill="#2c3e50">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Label fx:id="lblStatus" text="(Click vào bàn để thao tác)" textFill="#7f8c8d" />
+
+                <!-- Chú thích màu sắc -->
+                <HBox alignment="CENTER_RIGHT" spacing="10.0" HBox.hgrow="ALWAYS">
+                    <Label text="TRỐNG" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 3 8;" />
+                    <Label text="CÓ KHÁCH" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-padding: 3 8;" />
+                    <Label text="ĐẶT TRƯỚC" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-padding: 3 8;" />
+                </HBox>
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <FlowPane fx:id="tableContainer" hgap="20.0" vgap="20.0">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                </FlowPane>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

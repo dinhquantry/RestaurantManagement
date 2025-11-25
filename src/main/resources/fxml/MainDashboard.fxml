@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!-- QUAN TRỌNG: Phải có fx:id="mainBorderPane" để Controller thay đổi nội dung ở giữa -->
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.MainDashboardController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #2c3e50; -fx-padding: 15;" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="QUẢN LÝ NHÀ HÀNG" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label fx:id="lblWelcome" text="Xin chào: Admin" textFill="WHITE">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+            </children>
+        </HBox>
+    </top>
+    <left>
+        <VBox spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-padding: 10;" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="CHỨC NĂNG CHÍNH" textFill="#7f8c8d">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+
+                <!-- Các nút chức năng chung (Ai cũng thấy) -->
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowTables" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="🏠  Sơ đồ bàn ăn">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowOrder" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="🍽  Gọi món (Menu)">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowTools" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="🔧  Kho dụng cụ">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+
+                <Separator prefWidth="200.0" />
+
+                <!-- QUAN TRỌNG: Phải gom nhóm Admin vào VBox có fx:id="adminBox" để code ẩn đi được -->
+                <VBox fx:id="adminBox" spacing="10.0">
+                    <children>
+                        <Label text="QUẢN TRỊ (ADMIN)" textFill="#7f8c8d">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Nút mới thêm: Quản lý Menu -->
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageMenu" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📋  Quản lý Thực đơn">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageStaff" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="👥  Quản lý Nhân viên">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📊  Báo cáo Doanh thu">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </VBox>
+
+                <VBox alignment="BOTTOM_LEFT" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" prefHeight="40.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" text="Đăng xuất">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets top="20.0" />
+                    </padding>
+                </VBox>
+            </children>
+            <padding>
+                <Insets right="10.0" />
+            </padding>
+        </VBox>
+    </left>
+    <center>
+        <Label text="Chọn chức năng bên trái" textFill="#95a5a6" BorderPane.alignment="CENTER">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+    </center>
+</BorderPane>
