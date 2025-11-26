@@ -85,7 +85,7 @@
                                 <Font size="14.0" />
                             </font>
                         </Button>
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📊  Báo cáo Doanh thu">
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📊  Báo cáo Doanh thu">
                             <font>
                                 <Font size="14.0" />
                             </font>
