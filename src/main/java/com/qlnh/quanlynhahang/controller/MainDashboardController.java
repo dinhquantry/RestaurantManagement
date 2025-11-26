@@ -2,7 +2,6 @@ package com.qlnh.quanlynhahang.controller;
 
 import com.qlnh.quanlynhahang.model.User;
 import com.qlnh.quanlynhahang.util.AlertUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -53,19 +52,30 @@ public class MainDashboardController {
 
     @FXML
     private void handleShowTables() {
-        switchView("TableMapView.fxml");
+        // CẬP NHẬT: Truyền currentUser sang TableMapController để sửa lỗi Foreign Key
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TableMapView.fxml"));
+            Parent view = loader.load();
+
+            TableMapController controller = loader.getController();
+            controller.initData(currentUser);
+
+            mainBorderPane.setCenter(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("Lỗi", "Không thể tải Sơ đồ bàn!");
+        }
     }
 
     @FXML
     private void handleShowOrder() {
-        // Logic cũ: switchView("OrderView.fxml"); -> Sửa thành:
+        // CẬP NHẬT: Truyền User sang OrderController
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/OrderView.fxml"));
             Parent view = loader.load();
 
-            // Truyền User sang OrderController
             OrderController controller = loader.getController();
-            controller.initData(currentUser); // Hàm này sẽ được thêm vào OrderController bên dưới
+            controller.initData(currentUser);
 
             mainBorderPane.setCenter(view);
         } catch (IOException e) {
@@ -86,23 +96,14 @@ public class MainDashboardController {
     }
 
     @FXML
-    private void handleLogout() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) lblWelcome.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-            stage.setTitle("Quản lý Nhà hàng - Đăng nhập");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     private void handleManageStaff() {
         switchView("StaffManagement.fxml");
+    }
+
+    // Nút mới: Báo cáo Doanh thu (Đã thêm)
+    @FXML
+    private void handleShowReport() {
+        switchView("ReportView.fxml");
     }
 
     @FXML
@@ -116,6 +117,21 @@ public class MainDashboardController {
             controller.initData(currentUser);
 
             mainBorderPane.setCenter(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) lblWelcome.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.centerOnScreen();
+            stage.setTitle("Quản lý Nhà hàng - Đăng nhập");
         } catch (IOException e) {
             e.printStackTrace();
         }

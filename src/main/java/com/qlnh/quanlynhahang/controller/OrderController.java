@@ -3,12 +3,12 @@ package com.qlnh.quanlynhahang.controller;
 import com.qlnh.quanlynhahang.dao.FoodDAO;
 import com.qlnh.quanlynhahang.dao.OrderDAO;
 import com.qlnh.quanlynhahang.dao.OrderDetailDAO;
-import com.qlnh.quanlynhahang.dao.TableDAO; // Import TableDAO
+import com.qlnh.quanlynhahang.dao.TableDAO;
 import com.qlnh.quanlynhahang.model.Food;
 import com.qlnh.quanlynhahang.model.Order;
 import com.qlnh.quanlynhahang.model.OrderDetail;
 import com.qlnh.quanlynhahang.model.OrderItem;
-import com.qlnh.quanlynhahang.model.User; // Import User
+import com.qlnh.quanlynhahang.model.User;
 import com.qlnh.quanlynhahang.util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,11 +24,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -46,20 +43,19 @@ public class OrderController {
     @FXML private TableColumn<OrderItem, Double> colTotal;
 
     @FXML private Label lblTotalAmount;
-    @FXML private Spinner<Integer> spnQuantity; // Spinner chọn số lượng
+    @FXML private Spinner<Integer> spnQuantity;
 
     private int tableId;
     private int currentOrderId = -1;
-    private User currentUser; // Biến lưu người dùng hiện tại
+    private User currentUser;
 
     private final FoodDAO foodDAO = new FoodDAO();
     private final OrderDAO orderDAO = new OrderDAO();
     private final OrderDetailDAO detailDAO = new OrderDetailDAO();
-    private final TableDAO tableDAO = new TableDAO(); // Sử dụng TableDAO
+    private final TableDAO tableDAO = new TableDAO();
 
     private ObservableList<OrderItem> currentOrderList = FXCollections.observableArrayList();
 
-    // Hàm nhận User từ Dashboard
     public void initData(User user) {
         this.currentUser = user;
     }
@@ -88,7 +84,6 @@ public class OrderController {
 
         tblOrder.setItems(currentOrderList);
 
-        // Cấu hình Spinner: Mặc định 1, Min 1, Max 100
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
         spnQuantity.setValueFactory(valueFactory);
     }
@@ -111,14 +106,13 @@ public class OrderController {
             return;
         }
 
-        int quantityToAdd = spnQuantity.getValue(); // Lấy số lượng từ Spinner
+        int quantityToAdd = spnQuantity.getValue();
 
         boolean exists = false;
         for (OrderItem item : currentOrderList) {
             if (item.getFoodId() == selected.getId()) {
                 int newQty = item.getQuantity() + quantityToAdd;
                 item.setQuantity(newQty);
-                // Tính lại tổng tiền dựa trên đơn giá gốc
                 item.setTotalPrice(newQty * item.getUnitPrice());
                 exists = true;
                 tblOrder.refresh();
@@ -127,7 +121,6 @@ public class OrderController {
         }
 
         if (!exists) {
-            // Lưu cả đơn giá gốc (unitPrice) vào OrderItem
             currentOrderList.add(new OrderItem(
                     selected.getId(), selected.getName(), quantityToAdd, selected.getPrice(), selected.getPrice() * quantityToAdd
             ));
@@ -135,16 +128,12 @@ public class OrderController {
         updateTotalAmount();
     }
 
-    // --- CÁC HÀM MỚI: TĂNG / GIẢM / XÓA ---
-
     @FXML
     private void handleIncrease() {
         OrderItem selected = tblOrder.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        // Tăng số lượng lên 1
         int newQty = selected.getQuantity() + 1;
-        // Sử dụng unitPrice đã lưu sẵn trong OrderItem
         double unitPrice = selected.getUnitPrice();
 
         selected.setQuantity(newQty);
@@ -159,7 +148,6 @@ public class OrderController {
         OrderItem selected = tblOrder.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        // Giảm số lượng xuống 1, nếu về 0 thì hỏi xóa
         if (selected.getQuantity() > 1) {
             int newQty = selected.getQuantity() - 1;
             double unitPrice = selected.getUnitPrice();
@@ -200,7 +188,6 @@ public class OrderController {
         if (this.currentOrderId == -1) {
             Order newOrder = new Order();
             newOrder.setTableId(this.tableId);
-            // Sử dụng ID của user hiện tại, nếu null thì fallback về 1 (Admin)
             newOrder.setUserId(currentUser != null ? currentUser.getId() : 1);
 
             this.currentOrderId = orderDAO.createOrder(newOrder);
@@ -214,12 +201,11 @@ public class OrderController {
                 detail.setOrderId(this.currentOrderId);
                 detail.setFoodId(item.getFoodId());
                 detail.setQuantity(item.getQuantity());
-                detail.setPriceAtOrder(item.getUnitPrice()); // Sử dụng unitPrice chính xác
+                detail.setPriceAtOrder(item.getUnitPrice());
 
                 detailDAO.addOrderDetail(detail);
             }
 
-            // Sử dụng TableDAO để cập nhật trạng thái
             tableDAO.updateStatus(this.tableId, "OCCUPIED");
 
             double total = currentOrderList.stream().mapToDouble(OrderItem::getTotalPrice).sum();
@@ -240,7 +226,6 @@ public class OrderController {
                 orderDAO.payOrder(this.currentOrderId);
             }
 
-            // Sử dụng TableDAO để trả bàn
             tableDAO.updateStatus(this.tableId, "EMPTY");
 
             AlertUtils.showInfo("Hoàn tất", "Đã thanh toán và trả bàn.");
@@ -250,6 +235,7 @@ public class OrderController {
         }
     }
 
+    // --- CHỈ CÒN CHỨC NĂNG IN / LƯU PDF ---
     @FXML
     private void handlePrintInvoice(javafx.event.ActionEvent event) {
         if (currentOrderList.isEmpty()) {
@@ -314,40 +300,20 @@ public class OrderController {
         WebEngine webEngine = webView.getEngine();
         webEngine.loadContent(htmlContent);
 
-        Button btnPrint = new Button("In / Lưu PDF");
+        Button btnPrint = new Button("Lưu PDF / In");
         btnPrint.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
         btnPrint.setPadding(new Insets(10, 20, 10, 20));
 
         btnPrint.setOnAction(e -> {
             PrinterJob job = PrinterJob.createPrinterJob();
             if (job != null && job.showPrintDialog(previewStage)) {
+                // Khi hộp thoại in hiện ra, chọn 'Microsoft Print to PDF' để lưu file
                 webEngine.print(job);
                 job.endJob();
             }
         });
 
-        Button btnSaveHtml = new Button("Lưu file HTML");
-        btnSaveHtml.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
-        btnSaveHtml.setPadding(new Insets(10, 20, 10, 20));
-
-        btnSaveHtml.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Lưu Hóa Đơn HTML");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("HTML Files", "*.html"));
-            fileChooser.setInitialFileName("HoaDon_Ban" + tableId + "_" + System.currentTimeMillis() + ".html");
-            File file = fileChooser.showSaveDialog(previewStage);
-            if (file != null) {
-                try (PrintWriter writer = new PrintWriter(file, "UTF-8")) {
-                    writer.print(htmlContent);
-                    AlertUtils.showInfo("Thành công", "Đã lưu file hóa đơn vào máy!");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    AlertUtils.showError("Lỗi", "Không thể lưu file: " + ex.getMessage());
-                }
-            }
-        });
-
-        HBox buttonBar = new HBox(15, btnPrint, btnSaveHtml);
+        HBox buttonBar = new HBox(15, btnPrint);
         buttonBar.setAlignment(Pos.CENTER);
         buttonBar.setPadding(new Insets(10));
         buttonBar.setStyle("-fx-background-color: #ecf0f1;");
