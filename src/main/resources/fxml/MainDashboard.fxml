@@ -4,116 +4,92 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<!-- QUAN TRỌNG: Phải có fx:id="mainBorderPane" để Controller thay đổi nội dung ở giữa -->
-<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.MainDashboardController">
+<!-- Thêm stylesheets="@../css/style.css" để kết nối file CSS -->
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="1100.0" stylesheets="@../css/DashboardStyle.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.MainDashboardController">
+
+    <!-- THANH TRÊN CÙNG (TOP BAR) -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #2c3e50; -fx-padding: 15;" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="top-bar" BorderPane.alignment="CENTER">
             <children>
-                <Label text="QUẢN LÝ NHÀ HÀNG" textFill="WHITE">
-                    <font>
-                        <Font name="System Bold" size="22.0" />
-                    </font>
-                </Label>
-                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                <!-- Logo Ứng dụng -->
+                <ImageView fx:id="imgLogo" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" />
+
+                <Label styleClass="app-title" text="QUẢN LÝ NHÀ HÀNG" />
+
+                <HBox alignment="CENTER_RIGHT" spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <Label fx:id="lblWelcome" text="Xin chào: Admin" textFill="WHITE">
-                            <font>
-                                <Font size="16.0" />
-                            </font>
-                        </Label>
+                        <!-- Avatar User -->
+                        <ImageView fx:id="imgAvatar" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 0);" />
+
+                        <Label fx:id="lblWelcome" styleClass="user-name" text="Xin chào: Admin" />
                     </children>
                 </HBox>
             </children>
         </HBox>
     </top>
+
+    <!-- MENU BÊN TRÁI (SIDEBAR) -->
     <left>
-        <VBox spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-padding: 10;" BorderPane.alignment="CENTER">
+        <VBox prefWidth="230.0" spacing="5.0" styleClass="sidebar" BorderPane.alignment="CENTER">
             <children>
-                <Label text="CHỨC NĂNG CHÍNH" textFill="#7f8c8d">
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
+                <Label styleClass="sidebar-title" text="VẬN HÀNH">
+                    <VBox.margin>
+                        <Insets top="20.0" />
+                    </VBox.margin>
                 </Label>
 
-                <!-- Các nút chức năng chung (Ai cũng thấy) -->
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowTables" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="🏠  Sơ đồ bàn ăn">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowOrder" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="🍽  Gọi món (Menu)">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowTools" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="🔧  Kho dụng cụ">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowShifts" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📅  Lịch làm việc">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
+                <!-- Các nút chức năng chung -->
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowTables" styleClass="nav-btn" text="🏠  Sơ đồ bàn ăn" />
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowOrder" styleClass="nav-btn" text="🍽  Gọi món (Menu)" />
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowTools" styleClass="nav-btn" text="🔧  Kho dụng cụ" />
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowShifts" styleClass="nav-btn" text="📅  Lịch làm việc" />
 
-                <Separator prefWidth="200.0" />
+                <Label styleClass="sidebar-title" text="CÁ NHÂN">
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </Label>
+                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowProfile" styleClass="nav-btn" text="👤  Thông tin tài khoản" />
 
-                <!-- QUAN TRỌNG: Phải gom nhóm Admin vào VBox có fx:id="adminBox" để code ẩn đi được -->
-                <VBox fx:id="adminBox" spacing="10.0">
+                <Separator prefWidth="200.0">
+                    <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                    </VBox.margin>
+                </Separator>
+
+                <!-- KHỐI QUẢN TRỊ (ADMIN) -->
+                <VBox fx:id="adminBox" spacing="5.0">
                     <children>
-                        <Label text="QUẢN TRỊ (ADMIN)" textFill="#7f8c8d">
-                            <font>
-                                <Font name="System Bold" size="12.0" />
-                            </font>
-                        </Label>
+                        <Label styleClass="sidebar-title" text="QUẢN TRỊ (ADMIN)" />
 
-                        <!-- Nút mới thêm: Quản lý Menu -->
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageMenu" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📋  Quản lý Thực đơn">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Button>
-
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageStaff" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="👥  Quản lý Nhân viên">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Button>
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" prefHeight="40.0" style="-fx-alignment: BASELINE_LEFT; -fx-background-color: white; -fx-cursor: hand;" text="📊  Báo cáo Doanh thu">
-                            <font>
-                                <Font size="14.0" />
-                            </font>
-                        </Button>
-
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageMenu" styleClass="nav-btn" text="📋  Quản lý Thực đơn" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageStaff" styleClass="nav-btn" text="👥  Quản lý Nhân viên" />
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleShowReport" styleClass="nav-btn" text="📊  Báo cáo Doanh thu" />
                     </children>
                 </VBox>
 
-                <VBox alignment="BOTTOM_LEFT" VBox.vgrow="ALWAYS">
+                <VBox alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
                     <children>
-                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" prefHeight="40.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" text="Đăng xuất">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogout" prefHeight="40.0" styleClass="logout-btn" text="Đăng xuất">
+                            <VBox.margin>
+                                <Insets bottom="20.0" left="20.0" right="20.0" />
+                            </VBox.margin>
                         </Button>
                     </children>
-                    <padding>
-                        <Insets top="20.0" />
-                    </padding>
                 </VBox>
             </children>
-            <padding>
-                <Insets right="10.0" />
-            </padding>
         </VBox>
     </left>
+
+    <!-- VÙNG NỘI DUNG CHÍNH -->
     <center>
-        <Label text="Chọn chức năng bên trái" textFill="#95a5a6" BorderPane.alignment="CENTER">
+        <Label text="Chào mừng trở lại!" textFill="#bdc3c7" BorderPane.alignment="CENTER">
             <font>
                 <Font size="24.0" />
             </font>

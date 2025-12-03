@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.BookingDialogController">
+    <children>
+        <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <Label text="ĐẶT BÀN MỚI" textFill="#2c3e50">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="lblTableName" text="Bàn số..." textFill="#7f8c8d">
+                    <font>
+                        <Font name="System Italic" size="14.0" />
+                    </font>
+                </Label>
+
+                <VBox spacing="5.0">
+                    <Label text="Tên khách hàng:" />
+                    <TextField fx:id="txtName" promptText="Ví dụ: Anh Nam" />
+                </VBox>
+
+                <VBox spacing="5.0">
+                    <Label text="Số điện thoại:" />
+                    <TextField fx:id="txtPhone" promptText="Ví dụ: 0988xxxxxx" />
+                </VBox>
+
+                <HBox spacing="15.0">
+                    <children>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Ngày nhận bàn:" />
+                                <DatePicker fx:id="dpDate" maxWidth="1.7976931348623157E308" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Giờ nhận bàn:" />
+                                <ComboBox fx:id="cbTime" editable="true" maxWidth="1.7976931348623157E308" promptText="Chọn giờ" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="10.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Button cancelButton="true" onAction="#handleCancel" text="Hủy bỏ" />
+                        <Button defaultButton="true" onAction="#handleSave" style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold;" text="Lưu Đặt Bàn" />
+                    </children>
+                    <VBox.margin>
+                        <Insets top="20.0" />
+                    </VBox.margin>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

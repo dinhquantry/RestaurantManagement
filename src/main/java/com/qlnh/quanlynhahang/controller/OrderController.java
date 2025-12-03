@@ -13,19 +13,18 @@ import com.qlnh.quanlynhahang.util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader; // Import này quan trọng
 import javafx.geometry.Pos;
-import javafx.print.PrinterJob;
 import javafx.scene.Node;
+import javafx.scene.Parent;    // Import Parent
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
+import javafx.stage.Modality;  // Import Modality
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
+import java.io.IOException;    // Import IOException
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -41,6 +40,7 @@ public class OrderController {
     @FXML private TableColumn<OrderItem, String> colOrderName;
     @FXML private TableColumn<OrderItem, Integer> colQuantity;
     @FXML private TableColumn<OrderItem, Double> colTotal;
+    @FXML private TableColumn<OrderItem, Void> colAction;
 
     @FXML private Label lblTotalAmount;
     @FXML private Spinner<Integer> spnQuantity;
@@ -62,7 +62,6 @@ public class OrderController {
 
     public void setTableId(int id) {
         this.tableId = id;
-        loadMenu();
 
         this.currentOrderId = orderDAO.getPendingOrderId(tableId);
 
@@ -82,10 +81,74 @@ public class OrderController {
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colTotal.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
 
+        setupActionColumn();
+
         tblOrder.setItems(currentOrderList);
 
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
         spnQuantity.setValueFactory(valueFactory);
+
+        loadMenu();
+    }
+
+    private void setupActionColumn() {
+        Callback<TableColumn<OrderItem, Void>, TableCell<OrderItem, Void>> cellFactory = new Callback<>() {
+            @Override
+            public TableCell<OrderItem, Void> call(final TableColumn<OrderItem, Void> param) {
+                return new TableCell<>() {
+                    private final Button btnDec = new Button("-");
+                    private final Button btnInc = new Button("+");
+                    private final Button btnDel = new Button("X");
+                    private final javafx.scene.layout.HBox pane = new javafx.scene.layout.HBox(5, btnDec, btnInc, btnDel);
+
+                    {
+                        btnDec.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 25px; -fx-cursor: hand;");
+                        btnDec.setOnAction(event -> {
+                            OrderItem item = getTableView().getItems().get(getIndex());
+                            changeQuantity(item, -1);
+                        });
+
+                        btnInc.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 25px; -fx-cursor: hand;");
+                        btnInc.setOnAction(event -> {
+                            OrderItem item = getTableView().getItems().get(getIndex());
+                            changeQuantity(item, 1);
+                        });
+
+                        btnDel.setStyle("-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-min-width: 25px; -fx-cursor: hand;");
+                        btnDel.setOnAction(event -> {
+                            OrderItem item = getTableView().getItems().get(getIndex());
+                            currentOrderList.remove(item);
+                            updateTotalAmount();
+                        });
+
+                        pane.setAlignment(Pos.CENTER);
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(pane);
+                        }
+                    }
+                };
+            }
+        };
+        colAction.setCellFactory(cellFactory);
+    }
+
+    private void changeQuantity(OrderItem item, int delta) {
+        int newQty = item.getQuantity() + delta;
+        if (newQty <= 0) {
+            currentOrderList.remove(item);
+        } else {
+            item.setQuantity(newQty);
+            item.setTotalPrice(newQty * item.getUnitPrice());
+            tblOrder.refresh();
+        }
+        updateTotalAmount();
     }
 
     private void loadMenu() {
@@ -128,51 +191,6 @@ public class OrderController {
         updateTotalAmount();
     }
 
-    @FXML
-    private void handleIncrease() {
-        OrderItem selected = tblOrder.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-
-        int newQty = selected.getQuantity() + 1;
-        double unitPrice = selected.getUnitPrice();
-
-        selected.setQuantity(newQty);
-        selected.setTotalPrice(newQty * unitPrice);
-
-        tblOrder.refresh();
-        updateTotalAmount();
-    }
-
-    @FXML
-    private void handleDecrease() {
-        OrderItem selected = tblOrder.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-
-        if (selected.getQuantity() > 1) {
-            int newQty = selected.getQuantity() - 1;
-            double unitPrice = selected.getUnitPrice();
-
-            selected.setQuantity(newQty);
-            selected.setTotalPrice(newQty * unitPrice);
-            tblOrder.refresh();
-            updateTotalAmount();
-        } else {
-            handleDeleteItem();
-        }
-    }
-
-    @FXML
-    private void handleDeleteItem() {
-        OrderItem selected = tblOrder.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            AlertUtils.showError("Lỗi", "Vui lòng chọn món cần xóa!");
-            return;
-        }
-
-        currentOrderList.remove(selected);
-        updateTotalAmount();
-    }
-
     private void updateTotalAmount() {
         double total = currentOrderList.stream().mapToDouble(OrderItem::getTotalPrice).sum();
         lblTotalAmount.setText(String.format("Tổng tiền: %,.0f VND", total));
@@ -180,6 +198,11 @@ public class OrderController {
 
     @FXML
     private void handleSaveOrder() {
+        if (this.tableId == 0) {
+            AlertUtils.showError("Lưu ý", "Vui lòng chọn bàn từ Sơ đồ bàn để gọi món!");
+            return;
+        }
+
         if (currentOrderList.isEmpty()) {
             AlertUtils.showError("Lỗi", "Chưa chọn món nào!");
             return;
@@ -217,6 +240,10 @@ public class OrderController {
 
     @FXML
     private void handlePayment(javafx.event.ActionEvent event) {
+        if (this.tableId == 0) {
+            AlertUtils.showError("Lỗi", "Chức năng này chỉ dùng khi đã chọn bàn!");
+            return;
+        }
         if (currentOrderList.isEmpty()) return;
 
         double total = currentOrderList.stream().mapToDouble(OrderItem::getTotalPrice).sum();
@@ -235,15 +262,40 @@ public class OrderController {
         }
     }
 
-    // --- CHỈ CÒN CHỨC NĂNG IN / LƯU PDF ---
     @FXML
     private void handlePrintInvoice(javafx.event.ActionEvent event) {
         if (currentOrderList.isEmpty()) {
             AlertUtils.showError("Lỗi", "Không có món nào để xuất hóa đơn!");
             return;
         }
+
+        // Tạo nội dung HTML
         String htmlContent = generateInvoiceHtmlString();
+
+        // Mở cửa sổ xem trước (Dùng FXML tách biệt)
         showPreviewWindow(htmlContent);
+    }
+
+    // Hàm mở cửa sổ xem trước đã được tách logic
+    private void showPreviewWindow(String htmlContent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/InvoicePreview.fxml"));
+            Parent root = loader.load();
+
+            // Lấy Controller của màn hình xem trước và truyền HTML vào
+            InvoicePreviewController controller = loader.getController();
+            controller.setInvoiceContent(htmlContent);
+
+            Stage stage = new Stage();
+            stage.setTitle("Xem trước Hóa Đơn - Bàn " + tableId);
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL); // Chặn cửa sổ cha
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("Lỗi", "Không thể mở cửa sổ xem trước!");
+        }
     }
 
     private String generateInvoiceHtmlString() {
@@ -266,7 +318,7 @@ public class OrderController {
         html.append("<div class='header'>");
         html.append("<h1>NHÀ HÀNG CỦA BẠN</h1>");
         html.append("<p>123 Đường Ẩm Thực, TP.HCM</p>");
-        html.append("<p>Bàn: ").append(tableId).append(" | Đơn: #").append(currentOrderId).append("</p>");
+        html.append("<p>Bàn: ").append(tableId == 0 ? "Mang về" : tableId).append(" | Đơn: #").append(currentOrderId == -1 ? "MỚI" : currentOrderId).append("</p>");
         html.append("<p>Thời gian: ").append(date).append("</p>");
         html.append("</div>");
 
@@ -290,40 +342,5 @@ public class OrderController {
         html.append("</body></html>");
 
         return html.toString();
-    }
-
-    private void showPreviewWindow(String htmlContent) {
-        Stage previewStage = new Stage();
-        previewStage.setTitle("Xem trước Hóa Đơn - Bàn " + tableId);
-
-        WebView webView = new WebView();
-        WebEngine webEngine = webView.getEngine();
-        webEngine.loadContent(htmlContent);
-
-        Button btnPrint = new Button("Lưu PDF / In");
-        btnPrint.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
-        btnPrint.setPadding(new Insets(10, 20, 10, 20));
-
-        btnPrint.setOnAction(e -> {
-            PrinterJob job = PrinterJob.createPrinterJob();
-            if (job != null && job.showPrintDialog(previewStage)) {
-                // Khi hộp thoại in hiện ra, chọn 'Microsoft Print to PDF' để lưu file
-                webEngine.print(job);
-                job.endJob();
-            }
-        });
-
-        HBox buttonBar = new HBox(15, btnPrint);
-        buttonBar.setAlignment(Pos.CENTER);
-        buttonBar.setPadding(new Insets(10));
-        buttonBar.setStyle("-fx-background-color: #ecf0f1;");
-
-        BorderPane root = new BorderPane();
-        root.setCenter(webView);
-        root.setBottom(buttonBar);
-
-        Scene scene = new Scene(root, 600, 700);
-        previewStage.setScene(scene);
-        previewStage.show();
     }
 }

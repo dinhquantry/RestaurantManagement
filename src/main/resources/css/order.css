@@ -1,0 +1,118 @@
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-background-color: #f4f6f8; /* Nền xám nhạt dịu mắt */
+}
+
+/* 1. Tiêu đề các khu vực */
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 10 0;
+}
+
+/* 2. Bảng dữ liệu (TableView) */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 0);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5 5 0 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 35px;
+    -fx-border-color: transparent transparent #bdc3c7 transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #2c3e50;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #ecf0f1 transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f9f9f9;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e8f6ff; /* Màu xanh nhạt khi chọn */
+    -fx-background-insets: 0;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #2980b9; /* Chữ màu xanh khi chọn */
+}
+
+/* 3. Tổng tiền */
+.total-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c0392b; /* Màu đỏ nổi bật */
+}
+
+/* 4. Các loại Nút bấm (Button) */
+.btn {
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+.btn:pressed {
+    -fx-translate-y: 1; /* Hiệu ứng nhấn xuống */
+}
+
+/* Nút Xanh lá (Thêm món, Lưu file) */
+.btn-success {
+    -fx-background-color: #27ae60;
+}
+.btn-success:hover { -fx-background-color: #2ecc71; }
+
+/* Nút Xanh dương (Lưu Order) */
+.btn-primary {
+    -fx-background-color: #2980b9;
+}
+.btn-primary:hover { -fx-background-color: #3498db; }
+
+/* Nút Cam (Thanh toán, Sửa) */
+.btn-warning {
+    -fx-background-color: #d35400;
+}
+.btn-warning:hover { -fx-background-color: #e67e22; }
+
+/* Nút Đỏ (Xóa) */
+.btn-danger {
+    -fx-background-color: #c0392b;
+}
+.btn-danger:hover { -fx-background-color: #e74c3c; }
+
+/* Nút Xám (Xuất HĐ, Tăng/Giảm) */
+.btn-secondary {
+    -fx-background-color: #7f8c8d;
+}
+.btn-secondary:hover { -fx-background-color: #95a5a6; }
+
+/* 5. Spinner */
+.spinner {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 4;
+}
+.spinner .text-field {
+    -fx-background-color: white;
+}

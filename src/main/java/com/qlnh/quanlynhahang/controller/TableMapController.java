@@ -2,20 +2,19 @@ package com.qlnh.quanlynhahang.controller;
 
 import com.qlnh.quanlynhahang.dao.TableDAO;
 import com.qlnh.quanlynhahang.model.DiningTable;
-import com.qlnh.quanlynhahang.model.User; // Import User
+import com.qlnh.quanlynhahang.model.User;
 import com.qlnh.quanlynhahang.util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class TableMapController {
 
     private final TableDAO tableDAO = new TableDAO();
     private List<DiningTable> allTables;
-    private User currentUser; // Biến lưu người dùng hiện tại
+    private User currentUser;
 
     public void initialize() {
         cbFloor.setItems(FXCollections.observableArrayList("Tất cả", "Tầng 1", "Tầng 2", "Tầng 3"));
@@ -36,7 +35,6 @@ public class TableMapController {
         loadTables();
     }
 
-    // Hàm nhận User từ Dashboard truyền sang
     public void initData(User user) {
         this.currentUser = user;
     }
@@ -76,47 +74,48 @@ public class TableMapController {
 
         String style = "-fx-font-weight: bold; -fx-text-fill: white; -fx-background-radius: 10; ";
         switch (t.getStatus()) {
-            case "EMPTY": style += "-fx-background-color: #27ae60;"; break; // Xanh
-            case "OCCUPIED": style += "-fx-background-color: #c0392b;"; break; // Đỏ
-            case "BOOKED": style += "-fx-background-color: #f39c12;"; break; // Vàng
+            case "EMPTY": style += "-fx-background-color: #27ae60;"; break;
+            case "OCCUPIED": style += "-fx-background-color: #c0392b;"; break;
+            case "BOOKED": style += "-fx-background-color: #f39c12;"; break;
         }
         btn.setStyle(style);
 
-        // Menu chuột phải (Admin/Quản lý dùng)
         ContextMenu contextMenu = new ContextMenu();
         MenuItem editItem = new MenuItem("Sửa thông tin");
         MenuItem deleteItem = new MenuItem("Xóa bàn");
 
-        editItem.setOnAction(e -> showEditDialog(t));
+        editItem.setOnAction(e -> showTableDialog(t));
         deleteItem.setOnAction(e -> handleDeleteTable(t));
 
         contextMenu.getItems().addAll(editItem, deleteItem);
         btn.setContextMenu(contextMenu);
 
-        // Chuột trái: Hiện hộp thoại lựa chọn Gọi món / Đặt bàn
         btn.setOnAction(e -> handleTableClick(t));
 
         return btn;
     }
 
-    // --- XỬ LÝ CLICK BÀN (MỚI) ---
+    // --- XỬ LÝ CLICK BÀN ---
     private void handleTableClick(DiningTable t) {
+        if ("OCCUPIED".equals(t.getStatus())) {
+            openOrderScreen(t);
+            return;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Thao tác: " + t.getName());
         alert.setHeaderText("Trạng thái hiện tại: " + translateStatus(t.getStatus()));
         alert.setContentText("Bạn muốn thực hiện thao tác nào?");
 
-        ButtonType btnOrder = new ButtonType("Gọi món");
+        ButtonType btnOrder = new ButtonType("Gọi món (Nhận khách)");
         ButtonType btnBooking = new ButtonType("Đặt bàn");
+        ButtonType btnCancelBooking = new ButtonType("Hủy đặt bàn");
         ButtonType btnCancel = new ButtonType("Đóng", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        // Logic hiển thị nút
         if ("EMPTY".equals(t.getStatus())) {
-            // Bàn trống: Được Gọi món hoặc Đặt bàn
             alert.getButtonTypes().setAll(btnOrder, btnBooking, btnCancel);
-        } else {
-            // Bàn Có khách/Đã đặt: Chỉ được Gọi món (để thêm món hoặc xem bill)
-            alert.getButtonTypes().setAll(btnOrder, btnCancel);
+        } else if ("BOOKED".equals(t.getStatus())) {
+            alert.getButtonTypes().setAll(btnOrder, btnCancelBooking, btnCancel);
         }
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -124,12 +123,21 @@ public class TableMapController {
             if (result.get() == btnOrder) {
                 openOrderScreen(t);
             } else if (result.get() == btnBooking) {
+                // Gọi hộp thoại đặt bàn mới tách ra
                 showBookingDialog(t);
+            } else if (result.get() == btnCancelBooking) {
+                if (tableDAO.updateStatus(t.getId(), "EMPTY")) {
+                    AlertUtils.showInfo("Thành công", "Đã hủy đặt bàn " + t.getName());
+                    loadTables();
+                } else {
+                    AlertUtils.showError("Lỗi", "Không thể hủy đặt bàn!");
+                }
             }
         }
     }
 
-    // Mở màn hình gọi món
+    // --- MỞ CÁC MÀN HÌNH ---
+
     private void openOrderScreen(DiningTable t) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/OrderView.fxml"));
@@ -137,7 +145,6 @@ public class TableMapController {
 
             OrderController controller = loader.getController();
             controller.setTableId(t.getId());
-            // QUAN TRỌNG: Truyền User sang OrderController để lưu đúng ID người bán
             controller.initData(currentUser);
 
             Stage stage = new Stage();
@@ -146,43 +153,14 @@ public class TableMapController {
             stage.setTitle("Gọi món - " + t.getName());
             stage.showAndWait();
 
-            loadTables(); // Reload sau khi đóng màn hình order (để cập nhật màu sắc)
+            loadTables();
         } catch (Exception e) {
             e.printStackTrace();
             AlertUtils.showError("Lỗi", "Không thể mở màn hình gọi món!");
         }
     }
 
-    // Xử lý Đặt bàn (Đổi trạng thái sang Vàng)
-    private void showBookingDialog(DiningTable t) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Đặt bàn - " + t.getName());
-        dialog.setHeaderText("Nhập thông tin khách đặt (Tên - SĐT - Giờ)");
-        dialog.setContentText("Ghi chú:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(info -> {
-            // Cập nhật trạng thái thành BOOKED
-            if (tableDAO.updateStatus(t.getId(), "BOOKED")) {
-                // (Nâng cao: Bạn có thể gọi BookingDAO để lưu thông tin khách vào bảng Bookings tại đây)
-                AlertUtils.showInfo("Thành công", "Đã đặt bàn cho: " + info);
-                loadTables();
-            } else {
-                AlertUtils.showError("Lỗi", "Không thể cập nhật trạng thái bàn!");
-            }
-        });
-    }
-
-    private String translateStatus(String status) {
-        switch (status) {
-            case "EMPTY": return "Bàn Trống";
-            case "OCCUPIED": return "Đang có khách";
-            case "BOOKED": return "Đã đặt trước";
-            default: return status;
-        }
-    }
-
-    // --- CÁC HÀM QUẢN LÝ BÀN (ADD/EDIT/DELETE) GIỮ NGUYÊN ---
+    // --- QUẢN LÝ BÀN (THÊM / SỬA) ---
     @FXML
     private void handleAddTable() {
         showTableDialog(null);
@@ -193,67 +171,27 @@ public class TableMapController {
     }
 
     private void showTableDialog(DiningTable tableToEdit) {
-        Dialog<DiningTable> dialog = new Dialog<>();
-        dialog.setTitle(tableToEdit == null ? "Thêm Bàn Mới" : "Sửa Bàn " + tableToEdit.getName());
-        dialog.setHeaderText("Nhập thông tin bàn:");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TableDialog.fxml"));
+            Parent root = loader.load();
 
-        ButtonType saveButtonType = new ButtonType("Lưu", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+            TableDialogController controller = loader.getController();
+            controller.setTable(tableToEdit);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle(tableToEdit == null ? "Thêm Bàn Mới" : "Sửa Bàn");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
 
-        TextField nameField = new TextField();
-        nameField.setPromptText("Tên bàn");
-        TextField capacityField = new TextField();
-        capacityField.setPromptText("Số ghế");
-        ComboBox<Integer> floorCombo = new ComboBox<>(FXCollections.observableArrayList(1, 2, 3));
-        floorCombo.getSelectionModel().selectFirst();
+            if (controller.isSaveClicked()) {
+                loadTables();
+            }
 
-        if (tableToEdit != null) {
-            nameField.setText(tableToEdit.getName());
-            capacityField.setText(String.valueOf(tableToEdit.getCapacity()));
-            floorCombo.getSelectionModel().select(Integer.valueOf(tableToEdit.getFloor()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("Lỗi", "Không thể mở hộp thoại quản lý bàn!");
         }
-
-        grid.add(new Label("Tên bàn:"), 0, 0);
-        grid.add(nameField, 1, 0);
-        grid.add(new Label("Số ghế:"), 0, 1);
-        grid.add(capacityField, 1, 1);
-        grid.add(new Label("Tầng:"), 0, 2);
-        grid.add(floorCombo, 1, 2);
-
-        dialog.getDialogPane().setContent(grid);
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == saveButtonType) {
-                DiningTable t = (tableToEdit != null) ? tableToEdit : new DiningTable();
-                t.setName(nameField.getText());
-                try {
-                    t.setCapacity(Integer.parseInt(capacityField.getText()));
-                } catch (Exception e) { t.setCapacity(4); }
-                t.setFloor(floorCombo.getValue());
-                return t;
-            }
-            return null;
-        });
-
-        Optional<DiningTable> result = dialog.showAndWait();
-        result.ifPresent(t -> {
-            if (tableToEdit == null) {
-                if (tableDAO.addTable(t)) {
-                    AlertUtils.showInfo("Thành công", "Đã thêm bàn mới!");
-                    loadTables();
-                }
-            } else {
-                if (tableDAO.updateTableInfo(t)) {
-                    AlertUtils.showInfo("Thành công", "Đã cập nhật thông tin bàn!");
-                    loadTables();
-                }
-            }
-        });
     }
 
     private void handleDeleteTable(DiningTable t) {
@@ -266,6 +204,40 @@ public class TableMapController {
                 AlertUtils.showInfo("Thành công", "Đã xóa bàn!");
                 loadTables();
             }
+        }
+    }
+
+    // --- FORM ĐẶT BÀN (BOOKING) - ĐÃ TÁCH RA ---
+    private void showBookingDialog(DiningTable t) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BookingDialog.fxml"));
+            Parent root = loader.load();
+
+            BookingDialogController controller = loader.getController();
+            controller.setTable(t);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Đặt bàn - " + t.getName());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            if (controller.isSaveClicked()) {
+                loadTables();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AlertUtils.showError("Lỗi", "Không thể mở hộp thoại đặt bàn!");
+        }
+    }
+
+    private String translateStatus(String status) {
+        switch (status) {
+            case "EMPTY": return "Bàn Trống";
+            case "OCCUPIED": return "Đang có khách";
+            case "BOOKED": return "Đã đặt trước";
+            default: return status;
         }
     }
 }
