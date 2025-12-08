@@ -10,16 +10,18 @@ public class Booking {
     private String tableName; // Field phụ để hiển thị tên bàn thay vì ID
     private Timestamp bookingTime;
     private String status;
+    private int guestCount; // Số lượng khách
 
     public Booking() {}
 
-    public Booking(int id, String customerName, String phone, int tableId, Timestamp bookingTime, String status) {
+    public Booking(int id, String customerName, String phone, int tableId, Timestamp bookingTime, String status, int guestCount) {
         this.id = id;
         this.customerName = customerName;
         this.phone = phone;
         this.tableId = tableId;
         this.bookingTime = bookingTime;
         this.status = status;
+        this.guestCount = guestCount;
     }
 
     // Getters and Setters
@@ -43,4 +45,7 @@ public class Booking {
 
     public String getTableName() { return tableName; }
     public void setTableName(String tableName) { this.tableName = tableName; }
+
+    public int getGuestCount() { return guestCount; }
+    public void setGuestCount(int guestCount) { this.guestCount = guestCount; }
 }

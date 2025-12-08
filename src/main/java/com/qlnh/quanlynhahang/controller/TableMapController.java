@@ -1,6 +1,8 @@
 package com.qlnh.quanlynhahang.controller;
 
+import com.qlnh.quanlynhahang.dao.BookingDAO;
 import com.qlnh.quanlynhahang.dao.TableDAO;
+import com.qlnh.quanlynhahang.model.Booking;
 import com.qlnh.quanlynhahang.model.DiningTable;
 import com.qlnh.quanlynhahang.model.User;
 import com.qlnh.quanlynhahang.util.AlertUtils;
@@ -25,6 +27,7 @@ public class TableMapController {
     @FXML private Button btnAddTable;
 
     private final TableDAO tableDAO = new TableDAO();
+    private final BookingDAO bookingDAO = new BookingDAO(); // Thêm DAO để lấy thông tin đặt bàn
     private List<DiningTable> allTables;
     private User currentUser;
 
@@ -109,13 +112,15 @@ public class TableMapController {
 
         ButtonType btnOrder = new ButtonType("Gọi món (Nhận khách)");
         ButtonType btnBooking = new ButtonType("Đặt bàn");
+        ButtonType btnViewInfo = new ButtonType("Xem thông tin"); // Nút xem thông tin khách
         ButtonType btnCancelBooking = new ButtonType("Hủy đặt bàn");
         ButtonType btnCancel = new ButtonType("Đóng", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         if ("EMPTY".equals(t.getStatus())) {
             alert.getButtonTypes().setAll(btnOrder, btnBooking, btnCancel);
         } else if ("BOOKED".equals(t.getStatus())) {
-            alert.getButtonTypes().setAll(btnOrder, btnCancelBooking, btnCancel);
+            // Thêm nút Xem thông tin cho bàn đã đặt
+            alert.getButtonTypes().setAll(btnOrder, btnViewInfo, btnCancelBooking, btnCancel);
         }
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -123,8 +128,9 @@ public class TableMapController {
             if (result.get() == btnOrder) {
                 openOrderScreen(t);
             } else if (result.get() == btnBooking) {
-                // Gọi hộp thoại đặt bàn mới tách ra
                 showBookingDialog(t);
+            } else if (result.get() == btnViewInfo) {
+                showBookingInfo(t);
             } else if (result.get() == btnCancelBooking) {
                 if (tableDAO.updateStatus(t.getId(), "EMPTY")) {
                     AlertUtils.showInfo("Thành công", "Đã hủy đặt bàn " + t.getName());
@@ -133,6 +139,23 @@ public class TableMapController {
                     AlertUtils.showError("Lỗi", "Không thể hủy đặt bàn!");
                 }
             }
+        }
+    }
+
+    // --- HIỂN THỊ THÔNG TIN ĐẶT BÀN ---
+    private void showBookingInfo(DiningTable t) {
+        // Giả sử BookingDAO có hàm getLatestBooking lấy thông tin đặt bàn gần nhất/sắp tới của bàn này
+        Booking booking = bookingDAO.getLatestBooking(t.getId());
+
+        if (booking != null) {
+            String info = "Khách hàng: " + booking.getCustomerName() + "\n" +
+                    "Số điện thoại: " + booking.getPhone() + "\n" +
+                    "Số lượng khách: " + booking.getGuestCount() + "\n" +
+                    "Thời gian: " + booking.getBookingTime();
+
+            AlertUtils.showInfo("Thông tin đặt bàn - " + t.getName(), info);
+        } else {
+            AlertUtils.showError("Lỗi", "Không tìm thấy thông tin đặt bàn!");
         }
     }
 

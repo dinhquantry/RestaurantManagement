@@ -11,7 +11,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.BookingDialogController">
+<!-- Sửa đường dẫn controller cho đúng package -->
+<AnchorPane prefHeight="450.0" prefWidth="400.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.BookingDialogController">
     <children>
         <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
@@ -31,13 +32,19 @@
                 </Label>
 
                 <VBox spacing="5.0">
-                    <Label text="Tên khách hàng:" />
+                    <Label text="Tên khách hàng (*):" />
                     <TextField fx:id="txtName" promptText="Ví dụ: Anh Nam" />
                 </VBox>
 
                 <VBox spacing="5.0">
-                    <Label text="Số điện thoại:" />
+                    <Label text="Số điện thoại (*):" />
                     <TextField fx:id="txtPhone" promptText="Ví dụ: 0988xxxxxx" />
+                </VBox>
+
+                <!-- Mới thêm: Trường nhập số lượng khách -->
+                <VBox spacing="5.0">
+                    <Label text="Số lượng khách (*):" />
+                    <TextField fx:id="txtGuestCount" promptText="Ví dụ: 4" />
                 </VBox>
 
                 <HBox spacing="15.0">

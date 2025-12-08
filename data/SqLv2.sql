@@ -1,9 +1,18 @@
-USE [RestaurantDB]
+USE master;
 GO
-/****** Object:  Table [dbo].[Bookings]    Script Date: 08/12/2025 2:25:04 CH ******/
-SET ANSI_NULLS ON
+
+-- 1. Xóa Database cũ nếu tồn tại để tạo mới (Lưu ý: Sẽ mất hết dữ liệu cũ)
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'RestaurantDB')
+BEGIN
+    ALTER DATABASE RestaurantDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE RestaurantDB;
+END
 GO
-SET QUOTED_IDENTIFIER ON
+
+-- 2. Tạo Database mới
+CREATE DATABASE RestaurantDB;
+GO
+USE RestaurantDB;
 GO
 CREATE TABLE [dbo].[Bookings](
 	[booking_id] [int] IDENTITY(1,1) NOT NULL,
@@ -13,13 +22,14 @@ CREATE TABLE [dbo].[Bookings](
 	[booking_time] [datetime] NOT NULL,
 	[created_at] [datetime] NULL,
 	[status] [varchar](20) NULL,
+	[guest_count] [int] NULL,
 PRIMARY KEY CLUSTERED
 (
 	[booking_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Foods]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[Foods]    Script Date: 08/12/2025 4:11:09 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -38,7 +48,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[OrderDetails]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[OrderDetails]    Script Date: 08/12/2025 4:11:09 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -55,7 +65,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Orders]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[Orders]    Script Date: 08/12/2025 4:11:09 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -73,7 +83,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Shifts]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[Shifts]    Script Date: 08/12/2025 4:11:09 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -90,7 +100,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Tables]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[Tables]    Script Date: 08/12/2025 4:11:10 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -107,7 +117,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Tools]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[Tools]    Script Date: 08/12/2025 4:11:10 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -124,7 +134,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 08/12/2025 2:25:04 CH ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 08/12/2025 4:11:10 CH ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -152,6 +162,8 @@ GO
 ALTER TABLE [dbo].[Bookings] ADD  DEFAULT (getdate()) FOR [created_at]
 GO
 ALTER TABLE [dbo].[Bookings] ADD  DEFAULT ('CONFIRMED') FOR [status]
+GO
+ALTER TABLE [dbo].[Bookings] ADD  DEFAULT ((1)) FOR [guest_count]
 GO
 ALTER TABLE [dbo].[Foods] ADD  DEFAULT (N'Món chính') FOR [category]
 GO
