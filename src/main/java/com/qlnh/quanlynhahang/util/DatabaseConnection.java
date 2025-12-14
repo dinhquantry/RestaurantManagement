@@ -10,8 +10,8 @@ public class DatabaseConnection {
     // 1433 là cổng mặc định.
     // encrypt=true;trustServerCertificate=true; là bắt buộc với các phiên bản SQL Server mới để tránh lỗi SSL
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=RestaurantDB;encrypt=true;trustServerCertificate=true;";
-    private static final String USER = "sa"; // Tài khoản mặc định của SQL Server thường là 'sa'
-    private static final String PASS = "1"; // Mật khẩu bạn đặt lúc cài SQL Server
+    private static final String USER = "sa";
+    private static final String PASS = "1";
 
     public static Connection getConnection() {
         Connection conn = null;

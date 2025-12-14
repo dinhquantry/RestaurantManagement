@@ -87,6 +87,7 @@ public class LoginController {
 
                 MainDashboardController dashboard = loader.getController();
                 dashboard.initData(currentUser);
+                StaffManagementController.setCurrentLoggedInUserId(currentUser.getId());
 
                 Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root, 1200, 600)); // Kích thước Dashboard rộng hơn chút

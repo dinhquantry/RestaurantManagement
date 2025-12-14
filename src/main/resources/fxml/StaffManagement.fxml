@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.StaffManagementController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qlnh.quanlynhahang.controller.StaffManagementController">
     <children>
         <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
@@ -55,17 +47,17 @@
                             <ComboBox fx:id="cbRole" maxWidth="1.7976931348623157E308" prefWidth="150.0" />
                         </VBox>
 
-                        <VBox spacing="5.0" alignment="CENTER">
-                            <Label text="Ảnh đại diện:" maxWidth="1.7976931348623157E308"/>
+                        <VBox alignment="CENTER" spacing="5.0">
+                            <Label maxWidth="1.7976931348623157E308" text="Ảnh đại diện:" />
                             <ImageView fx:id="imgAvatar" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-border-color: gray;" />
-                            <Button text="Chọn ảnh..." onAction="#handleUploadAvatar" />
+                            <Button onAction="#handleUploadAvatar" text="Chọn ảnh..." />
                         </VBox>
 
-                        <HBox spacing="10.0" alignment="CENTER">
-                            <Button text="Thêm" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" onAction="#handleAdd" prefWidth="60.0"/>
-                            <Button text="Sửa" style="-fx-background-color: #f39c12; -fx-text-fill: white;" onAction="#handleUpdate" prefWidth="60.0"/>
-                            <Button text="Xóa" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" onAction="#handleDelete" prefWidth="60.0"/>
-                            <Button text="Mới" onAction="#handleClear" prefWidth="60.0"/>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <Button onAction="#handleAdd" prefWidth="60.0" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" text="Thêm" />
+                            <Button onAction="#handleUpdate" prefWidth="60.0" style="-fx-background-color: #f39c12; -fx-text-fill: white;" text="Sửa" />
+                            <Button onAction="#handleDelete" prefWidth="60.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Xóa" />
+                            <Button onAction="#handleClear" prefWidth="60.0" text="Mới" />
                         </HBox>
                     </children>
                     <prefWidth>300.0</prefWidth>
@@ -74,7 +66,7 @@
                 <!-- DANH SÁCH NHÂN VIÊN -->
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <Label text="DANH SÁCH TÀI KHOẢN">
+                        <Label text="DANH SÁCH NHÂN VIÊN">
                             <font>
                                 <Font name="System Bold" size="16.0" />
                             </font>
