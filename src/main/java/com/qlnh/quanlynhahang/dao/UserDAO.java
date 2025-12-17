@@ -86,7 +86,7 @@ public class UserDAO {
                 stmt.setString(6, user.getPassword());
                 stmt.setInt(7, user.getId());
             } else {
-                stmt.setInt(8, user.getId());
+                stmt.setInt(6, user.getId());
             }
 
             return stmt.executeUpdate() > 0;
