@@ -29,7 +29,7 @@
 
                         <VBox spacing="5.0">
                             <Label text="Mật khẩu:" />
-                            <PasswordField fx:id="txtPassword" promptText="Để trống nếu không đổi" />
+                            <TextField fx:id="txtPassword" promptText="nhập mật khẩu" />
                         </VBox>
 
                         <VBox spacing="5.0">

@@ -68,24 +68,25 @@ public class UserDAO {
         boolean updatePassword = user.getPassword() != null && !user.getPassword().isEmpty();
         String query;
         if (updatePassword) {
-            query = "UPDATE Users SET full_name=?, role=?, phone=?, avatar_path=?, password=? WHERE user_id=?";
+            query = "UPDATE Users SET full_name=?, username=?, role=?, phone=?, avatar_path=?, password=? WHERE user_id=?";
         } else {
-            query = "UPDATE Users SET full_name=?, role=?, phone=?, avatar_path=? WHERE user_id=?";
+            query = "UPDATE Users SET full_name=?,username=?,  role=?, phone=?, avatar_path=? WHERE user_id=?";
         }
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, user.getFullName());
-            stmt.setString(2, user.getRole());
-            stmt.setString(3, user.getPhone());
-            stmt.setString(4, user.getAvatarPath());
+            stmt.setString(2, user.getUsername());
+            stmt.setString(3, user.getRole());
+            stmt.setString(4, user.getPhone());
+            stmt.setString(5, user.getAvatarPath());
 
             if (updatePassword) {
-                stmt.setString(5, user.getPassword());
-                stmt.setInt(6, user.getId());
+                stmt.setString(6, user.getPassword());
+                stmt.setInt(7, user.getId());
             } else {
-                stmt.setInt(5, user.getId());
+                stmt.setInt(8, user.getId());
             }
 
             return stmt.executeUpdate() > 0;

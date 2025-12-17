@@ -21,7 +21,7 @@ import java.util.List;
 public class StaffManagementController {
 
     @FXML private TextField txtUsername;
-    @FXML private PasswordField txtPassword;
+    @FXML private TextField txtPassword;
     @FXML private TextField txtFullName;
     @FXML private TextField txtPhone;
     @FXML private ComboBox<String> cbRole;
@@ -76,11 +76,11 @@ public class StaffManagementController {
     private void fillForm(User u) {
         txtUsername.setText(u.getUsername());
 
-        // 1. ĐÃ SỬA: Cho phép sửa Username
-        txtUsername.setDisable(false);
+        // 1.  Cho phép sửa Username
 
         txtPassword.clear();
         txtFullName.setText(u.getFullName());
+        txtPassword.setText(u.getPassword());
         txtPhone.setText(u.getPhone());
         cbRole.setValue(u.getRole());
 
